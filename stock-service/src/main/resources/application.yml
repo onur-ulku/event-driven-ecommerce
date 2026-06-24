@@ -1,0 +1,47 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: stock-service
+
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      # Eski yöntem: her consumer için group-id elle yönetilirdi, tutarsızlık olurdu.
+      # Yeni yöntem: servis adını group-id olarak kullanmak standart hale geldi.
+      # Aynı group-id'ye sahip consumer'lar aynı topic'i paylaşarak okur.
+      group-id: stock-service
+      # earliest → servis ilk başladığında topic'teki en eski mesajdan itibaren okur.
+      # latest  → sadece servis başladıktan sonra gelen yeni mesajları okur.
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        # Hangi package'daki sınıfları deserialize etmeye izin veriyoruz
+        spring.json.trusted.packages: "com.ecommerce.common.event"
+        # Producer type header göndermediği için hangi sınıfa deserialize edeceğini söylüyoruz
+        spring.json.value.default.type: "com.ecommerce.common.event.OrderCreatedEvent"
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        spring.json.add.type.headers: false
+        
+  datasource:
+    # url: jdbc:h2:mem:stockdb  # in-memory: uygulama kapanınca her şey silinir
+    url: jdbc:h2:file:./data/stockdb;AUTO_SERVER=TRUE  # file: diske yazar, uygulama kapansa bile veriler kalır
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      # ddl-auto: create-drop  # uygulama başlarken tabloyu oluştur, kapanınca sil
+      ddl-auto: update  # tablo yoksa oluştur, varsa güncelle — veriler korunur
+    show-sql: true
+  h2:
+    console:
+      enabled: true  # http://localhost:8082/h2-console adresinden veritabanını görebilirsin

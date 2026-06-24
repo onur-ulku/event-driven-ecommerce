@@ -1,0 +1,36 @@
+services:
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: kafka
+    ports:
+      - "9092:9092"   # Docker network içindeki container'lar buraya bağlanır (Kafdrop, servisler)
+      - "29092:29092" # Mac'deki Java uygulamaları buraya bağlanır
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # İki ayrı listener:
+      # PLAINTEXT      → Docker network içindeki container'lar için (kafdrop, diğer servisler)
+      # PLAINTEXT_HOST → Host makinenden (Mac'inden) Java uygulamaları için
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Topic varsayılan ayarları
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092  # Docker network içinde kafka container'ına bağlan
+    depends_on:
+      - kafka

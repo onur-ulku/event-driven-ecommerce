@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: order-service
+
+
+  kafka:
+    bootstrap-servers: localhost:29092  # Mac'den bağlandığımız port (PLAINTEXT_HOST listener)
+    producer:
+      # Eski yöntem: StringSerializer kullanılır, mesajlar String olarak gönderilirdi.
+      # Yeni yöntem: JsonSerializer — Java nesnesi direkt JSON'a çevrilerek Kafka'ya gönderilir.
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      # Mesaj iletim garantisi ayarları:
+      # acks=all → Kafka leader ve tüm replica'lar mesajı aldığında onay verir. En güvenli.
+      # acks=1   → Sadece leader onay verir. Daha hızlı ama replica'ya yazılmadan leader çökerse kayıp olur.
+      # acks=0   → Onay beklenmez. En hızlı ama en riskli.
+      acks: all
+
+      # Mesaj gönderilemezse kaç kez tekrar denesin
+      retries: 3
+
+      properties:
+        # JsonSerializer'ın type bilgisini header'a eklemesini engeller.
+        # Eklenseydi consumer tarafında aynı class path'i olmak zorunda kalırdı.
+        # Bu ayar sayesinde consumer sadece JSON'u okur, class bilgisine ihtiyaç duymaz.
+        spring.json.add.type.headers: false
