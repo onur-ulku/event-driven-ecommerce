@@ -1,0 +1,13 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+**/target/
+*.class
+
+# H2 database files
+data/
+
+# OS
+.DS_Store
