@@ -1,5 +1,6 @@
 package com.ecommerce.notification;
 
+import com.ecommerce.common.event.KafkaGroups;
 import com.ecommerce.common.event.KafkaTopics;
 import com.ecommerce.common.event.PaymentCompletedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationConsumer {
 
-    @KafkaListener(topics = KafkaTopics.PAYMENT_COMPLETED, groupId = "notification-service")
+    @KafkaListener(topics = KafkaTopics.PAYMENT_COMPLETED, groupId = KafkaGroups.NOTIFICATION_SERVICE)
     public void handlePaymentCompleted(
             @Payload PaymentCompletedEvent event,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,

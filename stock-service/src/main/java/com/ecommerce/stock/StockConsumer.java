@@ -1,5 +1,6 @@
 package com.ecommerce.stock;
 
+import com.ecommerce.common.event.KafkaGroups;
 import com.ecommerce.common.event.KafkaTopics;
 import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.common.event.StockReservedEvent;
@@ -25,7 +26,7 @@ public class StockConsumer {
     private final StockProducer stockProducer;
     private final StockService stockService;
 
-    @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = "stock-service")
+    @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = KafkaGroups.STOCK_SERVICE)
     public void handleOrderCreated(
             @Payload OrderCreatedEvent event,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,

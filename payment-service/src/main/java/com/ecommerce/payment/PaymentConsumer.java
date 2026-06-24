@@ -1,5 +1,6 @@
 package com.ecommerce.payment;
 
+import com.ecommerce.common.event.KafkaGroups;
 import com.ecommerce.common.event.KafkaTopics;
 import com.ecommerce.common.event.PaymentCompletedEvent;
 import com.ecommerce.common.event.StockReservedEvent;
@@ -21,7 +22,7 @@ public class PaymentConsumer {
     private final PaymentService paymentService;
     private final PaymentProducer paymentProducer;
 
-    @KafkaListener(topics = KafkaTopics.STOCK_RESERVED, groupId = "payment-service")
+    @KafkaListener(topics = KafkaTopics.STOCK_RESERVED, groupId = KafkaGroups.PAYMENT_SERVICE)
     public void handleStockReserved(
             @Payload StockReservedEvent event,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,

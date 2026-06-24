@@ -9,12 +9,6 @@ spring:
   kafka:
     bootstrap-servers: localhost:29092
     consumer:
-      # Eski yöntem: her consumer için group-id elle yönetilirdi, tutarsızlık olurdu.
-      # Yeni yöntem: servis adını group-id olarak kullanmak standart hale geldi.
-      # Aynı group-id'ye sahip consumer'lar aynı topic'i paylaşarak okur.
-      group-id: stock-service
-      # earliest → servis ilk başladığında topic'teki en eski mesajdan itibaren okur.
-      # latest  → sadece servis başladıktan sonra gelen yeni mesajları okur.
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
