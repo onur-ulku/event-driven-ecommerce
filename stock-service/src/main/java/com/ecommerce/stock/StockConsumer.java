@@ -25,6 +25,7 @@ public class StockConsumer {
 
     private final StockProducer stockProducer;
     private final StockService stockService;
+    private final ProcessedOrderRepository processedOrderRepository;
 
     @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = KafkaGroups.STOCK_SERVICE)
     public void handleOrderCreated(
@@ -35,7 +36,14 @@ public class StockConsumer {
         log.info("Order received. OrderId: {}, ProductId: {}, Quantity: {}, Partition: {}, Offset: {}",
                 event.getOrderId(), event.getProductId(), event.getQuantity(), partition, offset);
 
+        if (processedOrderRepository.existsById(event.getOrderId())) {
+            log.warn("Duplicate order detected, skipping. OrderId: {}", event.getOrderId());
+            return;
+        }
+
         boolean success = stockService.reserve(event.getProductId(), event.getQuantity());
+
+        processedOrderRepository.save(new ProcessedOrder(event.getOrderId(), Instant.now().toString()));
 
         StockReservedEvent stockEvent = new StockReservedEvent(
                 event.getOrderId(),

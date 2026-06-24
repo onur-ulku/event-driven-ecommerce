@@ -24,7 +24,5 @@ spring:
       retries: 3
 
       properties:
-        # JsonSerializer'ın type bilgisini header'a eklemesini engeller.
-        # Eklenseydi consumer tarafında aynı class path'i olmak zorunda kalırdı.
-        # Bu ayar sayesinde consumer sadece JSON'u okur, class bilgisine ihtiyaç duymaz.
         spring.json.add.type.headers: false
+        enable.idempotence: true
