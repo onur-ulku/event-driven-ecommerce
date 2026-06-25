@@ -12,7 +12,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /*
  * Responsible only for receiving messages from Kafka and delegating to StockService.
@@ -43,7 +43,7 @@ public class StockConsumer {
 
         boolean success = stockService.reserve(event.getProductId(), event.getQuantity());
 
-        processedOrderRepository.save(new ProcessedOrder(event.getOrderId(), Instant.now().toString()));
+        processedOrderRepository.save(new ProcessedOrder(event.getOrderId(), LocalDateTime.now().toString()));
 
         StockReservedEvent stockEvent = new StockReservedEvent(
                 event.getOrderId(),
@@ -53,7 +53,7 @@ public class StockConsumer {
                 event.getPrice(),
                 success,
                 success ? null : "Insufficient stock",
-                Instant.now().toString()
+                LocalDateTime.now().toString()
         );
 
         stockProducer.sendStockReservedEvent(stockEvent);

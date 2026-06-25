@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -72,7 +73,7 @@ public class PaymentService {
                     KafkaTopics.PAYMENT_COMPLETED,
                     event.getOrderId(),
                     payload,
-                    Instant.now().toString()
+                    LocalDateTime.now().toString()
             ));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize payment event", e);

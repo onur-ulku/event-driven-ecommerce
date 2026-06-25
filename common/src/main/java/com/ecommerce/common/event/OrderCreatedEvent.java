@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /*
@@ -31,6 +31,6 @@ public class OrderCreatedEvent {
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
-        this.createdAt = Instant.now().toString(); // → "2026-06-24T13:24:58.055Z"
+        this.createdAt = LocalDateTime.now().toString();
     }
 }
