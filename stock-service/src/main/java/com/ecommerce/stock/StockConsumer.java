@@ -3,7 +3,6 @@ package com.ecommerce.stock;
 import com.ecommerce.common.event.KafkaGroups;
 import com.ecommerce.common.event.KafkaTopics;
 import com.ecommerce.common.event.OrderCreatedEvent;
-import com.ecommerce.common.event.StockReservedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class StockConsumer {
 
-    private final StockProducer stockProducer;
     private final StockService stockService;
     private final ProcessedOrderRepository processedOrderRepository;
 
@@ -41,21 +39,7 @@ public class StockConsumer {
             return;
         }
 
-        boolean success = stockService.reserve(event.getProductId(), event.getQuantity());
-
         processedOrderRepository.save(new ProcessedOrder(event.getOrderId(), LocalDateTime.now().toString()));
-
-        StockReservedEvent stockEvent = new StockReservedEvent(
-                event.getOrderId(),
-                event.getCustomerId(),
-                event.getProductId(),
-                event.getQuantity(),
-                event.getPrice(),
-                success,
-                success ? null : "Insufficient stock",
-                LocalDateTime.now().toString()
-        );
-
-        stockProducer.sendStockReservedEvent(stockEvent);
+        stockService.reserve(event);
     }
 }
