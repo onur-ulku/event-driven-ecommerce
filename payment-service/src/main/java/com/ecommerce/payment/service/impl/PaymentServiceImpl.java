@@ -65,7 +65,9 @@ public class PaymentServiceImpl implements PaymentService {
                 event.getAmount(),
                 success,
                 failureReason,
-                LocalDateTime.now().toString()
+                LocalDateTime.now().toString(),
+                event.getProductId(),
+                event.getQuantity()
         );
     }
 

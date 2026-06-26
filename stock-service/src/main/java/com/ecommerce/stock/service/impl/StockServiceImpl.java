@@ -54,6 +54,17 @@ public class StockServiceImpl implements StockService {
         saveToOutbox(stockReservedEvent);
     }
 
+    @Override
+    @Transactional
+    public void compensate(String productId, int quantity) {
+        stockRepository.findByProductId(productId).ifPresentOrElse(item -> {
+            item.increase(quantity);
+            stockRepository.save(item);
+            log.info("Stock compensated. ProductId: {}, Restored: {}, Remaining: {}",
+                    productId, quantity, item.getQuantity());
+        }, () -> log.warn("Product not found for compensation. ProductId: {}", productId));
+    }
+
     private StockReservedEvent buildStockEvent(OrderCreatedEvent event, boolean success, String failureReason) {
         return new StockReservedEvent(
                 event.getOrderId(),

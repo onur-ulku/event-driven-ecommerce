@@ -21,4 +21,7 @@ public class PaymentCompletedEvent {
     private boolean success;
     private String failureReason;
     private String completedAt;
+
+    private String productId;
+    private Integer quantity;
 }

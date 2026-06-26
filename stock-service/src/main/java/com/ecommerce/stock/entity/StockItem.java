@@ -31,4 +31,8 @@ public class StockItem {
     public void decrease(int amount) {
         this.quantity -= amount;
     }
+
+    public void increase(int amount) {
+        this.quantity += amount;
+    }
 }

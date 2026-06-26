@@ -15,8 +15,6 @@ spring:
       properties:
         # Hangi package'daki sınıfları deserialize etmeye izin veriyoruz
         spring.json.trusted.packages: "com.ecommerce.common.event"
-        # Producer type header göndermediği için hangi sınıfa deserialize edeceğini söylüyoruz
-        spring.json.value.default.type: "com.ecommerce.common.event.OrderCreatedEvent"
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -24,7 +22,7 @@ spring:
       acks: all
       retries: 3
       properties:
-        spring.json.add.type.headers: false
+        spring.json.add.type.headers: true
         enable.idempotence: true
         
   datasource:
