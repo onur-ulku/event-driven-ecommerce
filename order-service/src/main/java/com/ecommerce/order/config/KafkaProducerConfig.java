@@ -1,6 +1,6 @@
-package com.ecommerce.order;
+package com.ecommerce.order.config;
 
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,15 +9,6 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaProducerConfig {
 
-    /*
-     * Topic'i kod tarafında tanımlıyoruz.
-     * Eski yöntem: Topic'ler Kafka'da elle oluşturulurdu (kafka-topics.sh scripti ile).
-     * Yeni yöntem: Spring Boot uygulama ayağa kalkarken topic yoksa otomatik oluşturuyor.
-     *
-     * partitions(3)  → 3 partition — aynı anda 3 consumer paralel okuyabilir
-     * replicas(1)    → 1 replica — local ortamda tek broker olduğu için 1 yeterli,
-     *                  prodüksiyonda en az 3 olur
-     */
     @Bean
     public NewTopic orderCreatedTopic() {
         return TopicBuilder.name(KafkaTopics.ORDER_CREATED)

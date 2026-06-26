@@ -1,8 +1,8 @@
-package com.ecommerce.notification;
+package com.ecommerce.notification.consumer;
 
-import com.ecommerce.common.event.KafkaGroups;
-import com.ecommerce.common.event.KafkaTopics;
 import com.ecommerce.common.event.PaymentCompletedEvent;
+import com.ecommerce.common.kafka.KafkaGroups;
+import com.ecommerce.common.kafka.KafkaTopics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,10 +13,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 
-/*
- * In a real project this class would send an email, SMS, or push notification.
- * We simulate it with log messages.
- */
 @Slf4j
 @Service
 public class NotificationConsumer {

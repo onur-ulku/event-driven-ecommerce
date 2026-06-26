@@ -1,10 +1,13 @@
-package com.ecommerce.payment;
+package com.ecommerce.payment.service.impl;
 
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaTopics;
 import com.ecommerce.common.event.PaymentCompletedEvent;
 import com.ecommerce.common.event.StockReservedEvent;
 import com.ecommerce.common.outbox.OutboxEvent;
 import com.ecommerce.common.outbox.OutboxRepository;
+import com.ecommerce.payment.entity.CustomerBalance;
+import com.ecommerce.payment.repository.CustomerBalanceRepository;
+import com.ecommerce.payment.service.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,18 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class PaymentServiceImpl implements PaymentService {
 
     private final CustomerBalanceRepository customerBalanceRepository;
     private final OutboxRepository outboxRepository;
     private final ObjectMapper objectMapper;
 
+    @Override
     @Transactional
     public void processPayment(StockReservedEvent event, BigDecimal amount) {
         PaymentCompletedEvent paymentEvent;
@@ -62,7 +65,7 @@ public class PaymentService {
                 event.getAmount(),
                 success,
                 failureReason,
-                Instant.now().toString()
+                LocalDateTime.now().toString()
         );
     }
 

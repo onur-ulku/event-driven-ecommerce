@@ -1,6 +1,6 @@
-package com.ecommerce.order;
+package com.ecommerce.order.producer;
 
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaTopics;
 import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.common.kafka.KafkaEventPublisher;
 import lombok.RequiredArgsConstructor;

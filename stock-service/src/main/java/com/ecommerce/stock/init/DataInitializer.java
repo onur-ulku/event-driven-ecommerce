@@ -1,18 +1,12 @@
-package com.ecommerce.stock;
+package com.ecommerce.stock.init;
 
+import com.ecommerce.stock.entity.StockItem;
+import com.ecommerce.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-/*
- * Loads initial stock data on application startup.
- * Old approach: data.sql or import.sql files.
- * New approach: CommandLineRunner — runs after Spring context is fully initialized,
- *               giving full access to repositories and beans.
- *
- * In a real project this class would not exist — data would already be in the database.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor

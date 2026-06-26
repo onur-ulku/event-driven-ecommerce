@@ -1,4 +1,4 @@
-package com.ecommerce.stock;
+package com.ecommerce.stock.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

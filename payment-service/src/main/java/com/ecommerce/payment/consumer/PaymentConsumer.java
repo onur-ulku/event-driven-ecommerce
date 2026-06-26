@@ -1,9 +1,9 @@
-package com.ecommerce.payment;
+package com.ecommerce.payment.consumer;
 
-import com.ecommerce.common.event.KafkaGroups;
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaGroups;
+import com.ecommerce.common.kafka.KafkaTopics;
 import com.ecommerce.common.event.StockReservedEvent;
-import jakarta.persistence.Column;
+import com.ecommerce.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,7 +11,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-
 
 @Slf4j
 @Service

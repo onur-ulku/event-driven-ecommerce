@@ -1,4 +1,4 @@
-package com.ecommerce.common.event;
+package com.ecommerce.common.kafka;
 
 public final class KafkaGroups {
 

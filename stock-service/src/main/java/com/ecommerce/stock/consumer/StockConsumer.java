@@ -1,8 +1,11 @@
-package com.ecommerce.stock;
+package com.ecommerce.stock.consumer;
 
-import com.ecommerce.common.event.KafkaGroups;
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaGroups;
+import com.ecommerce.common.kafka.KafkaTopics;
 import com.ecommerce.common.event.OrderCreatedEvent;
+import com.ecommerce.stock.entity.ProcessedOrder;
+import com.ecommerce.stock.repository.ProcessedOrderRepository;
+import com.ecommerce.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,10 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-/*
- * Responsible only for receiving messages from Kafka and delegating to StockService.
- * Business logic lives in StockService, not here.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

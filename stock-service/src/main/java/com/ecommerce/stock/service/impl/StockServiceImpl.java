@@ -1,10 +1,13 @@
-package com.ecommerce.stock;
+package com.ecommerce.stock.service.impl;
 
-import com.ecommerce.common.event.KafkaTopics;
+import com.ecommerce.common.kafka.KafkaTopics;
 import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.common.event.StockReservedEvent;
 import com.ecommerce.common.outbox.OutboxEvent;
 import com.ecommerce.common.outbox.OutboxRepository;
+import com.ecommerce.stock.entity.StockItem;
+import com.ecommerce.stock.repository.StockRepository;
+import com.ecommerce.stock.service.StockService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +21,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockService {
+public class StockServiceImpl implements StockService {
 
     private final StockRepository stockRepository;
     private final OutboxRepository outboxRepository;
     private final ObjectMapper objectMapper;
 
+    @Override
     @Transactional
     public void reserve(OrderCreatedEvent event) {
         Optional<StockItem> optional = stockRepository.findByProductId(event.getProductId());

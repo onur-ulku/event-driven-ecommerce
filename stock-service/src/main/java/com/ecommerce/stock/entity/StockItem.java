@@ -1,4 +1,4 @@
-package com.ecommerce.stock;
+package com.ecommerce.stock.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,12 +7,6 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/*
- * Eski yöntem: javax.persistence kullanılırdı (Java EE).
- * Yeni yöntem: jakarta.persistence — Spring Boot 3.x ile Jakarta EE'ye geçildi.
- *
- * Gerçek projede bu entity PostgreSQL'deki stock_item tablosuna karşılık gelir.
- */
 @Entity
 @Getter
 @NoArgsConstructor
