@@ -34,3 +34,17 @@ services:
       KAFKA_BROKERCONNECT: kafka:9092  # Docker network içinde kafka container'ına bağlan
     depends_on:
       - kafka
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "5540:5540"  # Redis arayüz
+    depends_on:
+      - redis

@@ -40,6 +40,11 @@ spring:
     console:
       enabled: true  # http://localhost:8082/h2-console adresinden veritabanını görebilirsin
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 outbox:
   publisher:
     delay-ms: 1000
