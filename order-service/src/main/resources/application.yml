@@ -5,6 +5,10 @@ spring:
   application:
     name: order-service
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   kafka:
     bootstrap-servers: localhost:29092  # Mac'den bağlandığımız port (PLAINTEXT_HOST listener)
@@ -26,3 +30,8 @@ spring:
       properties:
         spring.json.add.type.headers: true
         enable.idempotence: true
+
+rate-limit:
+  order:
+    limit: 5
+    window-seconds: 60

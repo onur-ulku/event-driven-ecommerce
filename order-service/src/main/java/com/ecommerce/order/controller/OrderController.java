@@ -2,9 +2,11 @@ package com.ecommerce.order.controller;
 
 import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.order.dto.OrderRequest;
+import com.ecommerce.order.ratelimit.RateLimiter;
 import com.ecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+    private final RateLimiter rateLimiter;
 
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest request) {
+        if (!rateLimiter.tryAcquire(request.customerId())) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("Rate limit exceeded. Please try again later.");
+        }
+
         log.info("New order received. Customer: {}, Product: {}", request.customerId(), request.productId());
         OrderCreatedEvent event = orderService.createOrder(request);
         return ResponseEntity.ok("Order received. OrderId:" + event.getOrderId());
