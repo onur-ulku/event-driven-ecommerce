@@ -48,3 +48,7 @@ spring:
 outbox:
   publisher:
     delay-ms: 1000
+
+cache:
+  ttls:
+    stock: 60s

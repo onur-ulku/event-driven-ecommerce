@@ -5,6 +5,8 @@ import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.common.event.StockReservedEvent;
 import com.ecommerce.common.outbox.OutboxEvent;
 import com.ecommerce.common.outbox.OutboxRepository;
+import com.ecommerce.stock.config.RedisCacheConfig;
+import com.ecommerce.stock.dto.StockResponse;
 import com.ecommerce.stock.entity.StockItem;
 import com.ecommerce.stock.repository.StockRepository;
 import com.ecommerce.stock.service.StockService;
@@ -12,11 +14,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Slf4j
 @Service
@@ -29,6 +35,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @CacheEvict(value = RedisCacheConfig.STOCK_CACHE, key = "#event.productId")
     public void reserve(OrderCreatedEvent event) {
         Optional<StockItem> optional = stockRepository.findByProductId(event.getProductId());
 
@@ -56,6 +63,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @CacheEvict(value = RedisCacheConfig.STOCK_CACHE, key = "#productId")
     public void compensate(String productId, int quantity) {
         stockRepository.findByProductId(productId).ifPresentOrElse(item -> {
             item.increase(quantity);
@@ -63,6 +71,16 @@ public class StockServiceImpl implements StockService {
             log.info("Stock compensated. ProductId: {}, Restored: {}, Remaining: {}",
                     productId, quantity, item.getQuantity());
         }, () -> log.warn("Product not found for compensation. ProductId: {}", productId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = RedisCacheConfig.STOCK_CACHE, key = "#productId")
+    public StockResponse getStock(String productId) {
+        log.info("Reading stock from DB (cache miss). ProductId: {}", productId);
+        StockItem item = stockRepository.findByProductId(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
+        return new StockResponse(item.getProductId(), item.getQuantity());
     }
 
     private StockReservedEvent buildStockEvent(OrderCreatedEvent event, boolean success, String failureReason) {
