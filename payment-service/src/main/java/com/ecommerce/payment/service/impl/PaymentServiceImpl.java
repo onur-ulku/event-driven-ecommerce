@@ -6,6 +6,7 @@ import com.ecommerce.common.event.StockReservedEvent;
 import com.ecommerce.common.outbox.OutboxEvent;
 import com.ecommerce.common.outbox.OutboxRepository;
 import com.ecommerce.payment.entity.CustomerBalance;
+import com.ecommerce.payment.gateway.PaymentGatewayClient;
 import com.ecommerce.payment.repository.CustomerBalanceRepository;
 import com.ecommerce.payment.service.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CustomerBalanceRepository customerBalanceRepository;
     private final OutboxRepository outboxRepository;
     private final ObjectMapper objectMapper;
+    private final PaymentGatewayClient paymentGatewayClient;
 
     @Override
     @Transactional
@@ -46,6 +48,12 @@ public class PaymentServiceImpl implements PaymentService {
             } else if (!customerBalance.hasSufficientBalance(amount)) {
                 log.warn("Insufficient balance. OrderId: {}, CustomerId: {}", event.getOrderId(), event.getCustomerId());
                 paymentEvent = buildPaymentEvent(event, false, "Insufficient balance");
+            } else if (!paymentGatewayClient.charge(event.getCustomerId(), amount)) {
+                // Dış ödeme ağ geçidi başarısız (hata veya devre açık) → ödeme yapılamadı.
+                // Bakiye düşülmez; Saga stok geri yükleyecek.
+                log.warn("Payment gateway declined. OrderId: {}, CustomerId: {}",
+                        event.getOrderId(), event.getCustomerId());
+                paymentEvent = buildPaymentEvent(event, false, "Payment gateway unavailable");
             } else {
                 customerBalance.deduct(amount);
                 customerBalanceRepository.save(customerBalance);

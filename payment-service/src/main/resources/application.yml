@@ -39,3 +39,20 @@ spring:
       acks: all
       properties:
         spring.json.add.type.headers: true
+
+# Simüle dış ödeme ağ geçidinin hata oranı (0.0 = hiç hata, 1.0 = hep hata).
+# Circuit breaker testinde 1.0 yapıp devrenin açılmasını gözlemleyeceğiz.
+payment:
+  gateway:
+    failure-rate: 0.0
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentGateway:                       # PaymentGatewayClient'taki @CircuitBreaker(name) ile eşleşir
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10             # son 10 çağrıya bakar
+        failure-rate-threshold: 50          # %50+ hata olursa devreyi AÇ
+        wait-duration-in-open-state: 10s    # açık kaldıktan 10sn sonra HALF_OPEN'a geç
+        permitted-number-of-calls-in-half-open-state: 3  # yarı-açıkta 3 deneme isteği
+        minimum-number-of-calls: 5          # en az 5 çağrı olmadan oran hesaplanmaz
