@@ -52,3 +52,6 @@ outbox:
 cache:
   ttls:
     stock: 60s
+
+idempotency:
+  ttl-hours: 24
